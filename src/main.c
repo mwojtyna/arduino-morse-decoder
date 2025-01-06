@@ -5,7 +5,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-int main(void) {
+int __attribute__((section(".init9"))) main(void) {
     CAL_PIN_MODE(DDRB, DDB5, OUTPUT);
 
     while (1) {
