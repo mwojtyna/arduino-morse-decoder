@@ -1,15 +1,17 @@
+// 16MHz CPU clock for util/delay.h
 #define F_CPU 16000000UL
 
+#include "cal.h"
 #include <avr/io.h>
 #include <util/delay.h>
 
 int main(void) {
-    DDRB |= 1 << DDB5; // set PB5 as output
+    cal_pin_mode(&DDRB, DDB5, OUTPUT);
 
     while (1) {
-        PORTB |= 1 << PORTB5;
+        cal_digital_write(&PORTB, PORTB5, HIGH);
         _delay_ms(500);
-        PORTB &= ~(1 << PORTB5);
+        cal_digital_write(&PORTB, PORTB5, LOW);
         _delay_ms(500);
     }
 
