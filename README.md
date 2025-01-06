@@ -10,6 +10,7 @@ Required software:
 - `avr-binutils`
 - `avr-libc`
 - `make`
+- `avrdude` (for uploading)
 
 1. Run `make` in project folder to build
 2. Run `make upload` to upload the binary
