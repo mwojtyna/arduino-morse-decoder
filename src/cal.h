@@ -1,6 +1,4 @@
-#include <stdint.h>
-
-// cal - Common AVR Library
+/* cal - Common AVR Library */
 
 #define HIGH 1
 #define LOW 0
@@ -11,14 +9,27 @@
 /** 
  * Set pin mode
  *
- * `cal_pin_mode(&DDRB, DDB5, OUTPUT);`
- * `cal_pin_mode(&DDRB, DDB5, INPUT);`
+ * Examples:
+ * `CAL_PIN_MODE(DDRB, DDB5, OUTPUT);`
+ * `CAL_PIN_MODE(DDRB, DDB5, INPUT);`
  */
-void cal_pin_mode(volatile uint8_t* ddr, uint8_t num, uint8_t mode);
+#define CAL_PIN_MODE(ddr, num, mode)                                           \
+    if (mode == INPUT) {                                                       \
+        ddr &= ~(1 << num);                                                    \
+    } else {                                                                   \
+        ddr |= 1 << num;                                                       \
+    }
 
 /** 
- * Write 
- * `cal_digital_write(&PORTB, PORTB5, HIGH);`
- * `cal_digital_write(&PORTB, PORTB5, LOW);`
+ * Write to port
+ *
+ * Examples:
+ * `CAL_WRITE_PORT(PORTB, PORTB5, HIGH);`
+ * `CAL_WRITE_PORT(PORTB, PORTB5, LOW);`
  */
-void cal_digital_write(volatile uint8_t* reg, uint8_t num, uint8_t value);
+#define CAL_WRITE_PORT(reg, num, val)                                          \
+    if (val == LOW) {                                                          \
+        reg &= ~(1 << num);                                                    \
+    } else {                                                                   \
+        reg |= 1 << num;                                                       \
+    }

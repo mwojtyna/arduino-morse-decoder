@@ -6,12 +6,12 @@
 #include <util/delay.h>
 
 int main(void) {
-    cal_pin_mode(&DDRB, DDB5, OUTPUT);
+    CAL_PIN_MODE(DDRB, DDB5, OUTPUT);
 
     while (1) {
-        cal_digital_write(&PORTB, PORTB5, HIGH);
+        CAL_WRITE_PORT(PORTB, PORTB5, HIGH);
         _delay_ms(500);
-        cal_digital_write(&PORTB, PORTB5, LOW);
+        CAL_WRITE_PORT(PORTB, PORTB5, LOW);
         _delay_ms(500);
     }
 
