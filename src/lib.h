@@ -10,11 +10,11 @@
 #define OUTPUT 1
 #define INPUT 0
 
-#define WRITE_BIT(reg, num, val)                                               \
-    if (val == 0) {                                                            \
-        reg &= ~(1 << num);                                                    \
-    } else {                                                                   \
-        reg |= 1 << num;                                                       \
+#define WRITE_BIT(reg, num, val)                                                                   \
+    if (val == 0) {                                                                                \
+        reg &= ~(1 << num);                                                                        \
+    } else {                                                                                       \
+        reg |= 1 << num;                                                                           \
     }
 
 #define READ_BIT(reg, num) ((reg & (1 << num)) >> num)
@@ -27,6 +27,6 @@ void usart_init();
 // Initializes timer to measure each ms elapsed
 void timer_init();
 // Returns ms elapsed from start of program
-uint32_t timer_get();
+uint32_t timer_ms();
 
 #endif

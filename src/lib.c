@@ -19,12 +19,11 @@ static int usart_putchar(char data, FILE* stream) {
     return 0;
 }
 
-static FILE mystdout =
-    FDEV_SETUP_STREAM(usart_putchar, NULL, _FDEV_SETUP_WRITE);
+static FILE usart_stdout = FDEV_SETUP_STREAM(usart_putchar, NULL, _FDEV_SETUP_WRITE);
 
 void usart_init() {
     // Enable the use of regular stdio.h functions to print over USART
-    stdout = &mystdout;
+    stdout = &usart_stdout;
 
     // Table 19-1, ATmega328P data sheet
     const uint16_t UBRR = roundf_fast((F_CPU / (16 * (float)BAUD)) - 1);
@@ -37,13 +36,11 @@ void usart_init() {
     WRITE_BIT(UCSR0B, TXEN0, 1);  // Enable transmitter
     WRITE_BIT(UCSR0B, UCSZ02, 0); // 8-bit character size
 
-    // clang-format off
-    UCSR0C = (0 << UMSEL01) | (0 << UMSEL00) |    // Set asynchronous mode
-             (0 << UPM01) | (0 << UPM00) |        // Disable parity
-             (0 << USBS0) |                       // 1-bit stop bit
-             (1 << UCSZ01) | (1 << UCSZ00) |      // 8-bit character size
-             (0 << UCPOL0);                       // clock polarity = 0 because asynchronous mode
-    // clang-format on
+    UCSR0C = (0 << UMSEL01) | (0 << UMSEL00) | // Set asynchronous mode
+             (0 << UPM01) | (0 << UPM00) |     // Disable parity
+             (0 << USBS0) |                    // 1-bit stop bit
+             (1 << UCSZ01) | (1 << UCSZ00) |   // 8-bit character size
+             (0 << UCPOL0);                    // clock polarity = 0 because asynchronous mode
 }
 
 // ------------------ TIMER ------------------
@@ -73,7 +70,7 @@ void timer_init() {
     OCR0A = 250;
 }
 
-uint32_t timer_get() {
+uint32_t timer_ms() {
     uint32_t m;
     ATOMIC_BLOCK(ATOMIC_FORCEON) {
         m = millis;
