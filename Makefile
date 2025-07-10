@@ -1,7 +1,8 @@
 CC=avr-gcc
 MCU=atmega328p
 CSTD=c23
-CFLAGS=-mmcu=$(MCU) -std=$(CSTD) -Wall -pedantic -O1 -flto
+CFLAGS=-mmcu=$(MCU) -std=$(CSTD) -Wall -pedantic -Os -flto
+LFLAGS=-Wl,-u,vfprintf -lprintf_min
 
 SRC_DIR=src
 BUILD_DIR=build
@@ -21,10 +22,10 @@ BAUD=115200
 all: $(ELF)
 
 $(ELF): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(ELF)
+	$(CC) $(CFLAGS) $(LFLAGS) $(OBJ) -o $(ELF)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(LIB)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(LFLAGS) -c $< -o $@
 
 upload: $(ELF) size
 	avr-objcopy -O ihex $(ELF) $(HEX)

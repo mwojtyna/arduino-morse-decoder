@@ -1,11 +1,21 @@
 #include "lib.h"
 #include <avr/io.h>
+#include <stdio.h>
 
-inline int roundf_fast(float x) {
-    return (x >= 0.0f) ? (int)(x + 0.5f) : (int)(x - 0.5f);
+static int usart_putchar(char data, FILE* stream) {
+    // Wait until buffer is empty
+    while (READ_BIT(UCSR0A, UDRE0) == 0) {
+    }
+    UDR0 = data;
+    return 0;
 }
 
+static FILE mystdout =
+    FDEV_SETUP_STREAM(usart_putchar, NULL, _FDEV_SETUP_WRITE);
+
 void usart_init(uint32_t baud_rate, uint64_t cpu_clock) {
+    stdout = &mystdout;
+
     // Table 19-1, ATmega328P data sheet
     const uint16_t UBRR =
         roundf_fast((cpu_clock / (16 * (float)baud_rate)) - 1);
@@ -27,21 +37,6 @@ void usart_init(uint32_t baud_rate, uint64_t cpu_clock) {
     // clang-format on
 }
 
-void usart_send(uint8_t data) {
-    // Wait until buffer is empty
-    while (READ_BIT(UCSR0A, UDRE0) == 0) {
-    }
-    UDR0 = data;
-}
-
-void usart_print(const char* s) {
-    while (*s) {
-        usart_send(*s++);
-    }
-}
-
-void usart_println(const char* s) {
-    usart_print(s);
-    usart_send('\r');
-    usart_send('\n');
+inline int roundf_fast(float x) {
+    return (x >= 0.0f) ? (int)(x + 0.5f) : (int)(x - 0.5f);
 }
