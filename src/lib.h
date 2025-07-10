@@ -24,7 +24,9 @@ int roundf_fast(float x);
 // Initalize USART. After initialization you can use normal stdio.h functions to write output over serial.
 void usart_init();
 
+// Initializes timer to measure each ms elapsed
 void timer_init();
+// Returns ms elapsed from start of program
 uint32_t timer_get();
 
 #endif

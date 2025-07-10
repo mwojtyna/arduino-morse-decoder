@@ -5,10 +5,13 @@
 #define BAUD_RATE 115200
 
 #include "lib.h"
+#include <avr/interrupt.h>
 #include <avr/io.h>
 
 int main() {
-    usart_init(BAUD_RATE, F_CPU);
+    usart_init();
+    timer_init();
+    sei();
 
     WRITE_BIT(DDRD, DDD6, INPUT);  // Set port D6 as input
     WRITE_BIT(PORTD, PORTD6, 1);   // Activate pin D6's pull-up resistor

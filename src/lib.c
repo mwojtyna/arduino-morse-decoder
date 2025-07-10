@@ -1,7 +1,9 @@
 #include "lib.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
+#include <avr/pgmspace.h>
 #include <stdio.h>
+#include <util/atomic.h>
 
 // ------------------ MATH ------------------
 inline int roundf_fast(float x) {
@@ -21,6 +23,7 @@ static FILE mystdout =
     FDEV_SETUP_STREAM(usart_putchar, NULL, _FDEV_SETUP_WRITE);
 
 void usart_init() {
+    // Enable the use of regular stdio.h functions to print over USART
     stdout = &mystdout;
 
     // Table 19-1, ATmega328P data sheet
@@ -44,17 +47,18 @@ void usart_init() {
 }
 
 // ------------------ TIMER ------------------
-static volatile uint32_t millis = 0;
+static uint32_t millis = 0;
 
 // Interrupt for when timer counts up to 1ms
 ISR(TIMER0_COMPA_vect) {
     millis++;
 }
 
-// Initializes timer to measure each ms elapsed
 void timer_init() {
-    // Enable interrupts, otherwise timer won't count from the start of program
-    sei();
+    // Enable Clear Timer On Compare (CTC) mode
+    WRITE_BIT(TCCR0B, WGM02, 0);
+    WRITE_BIT(TCCR0A, WGM01, 1);
+    WRITE_BIT(TCCR0A, WGM02, 1);
 
     // Set timer's clock source to system clock / 64
     WRITE_BIT(TCCR0B, CS02, 0);
@@ -67,17 +71,12 @@ void timer_init() {
     // System clock / 64 = 16'000'000 / 64 = 250'000 ticks/s = 250 ticks/ms
     // Generate an interrupt whenever the timer counts to 250 (to get an interrupt each ms)
     OCR0A = 250;
-
-    // Enable Clear Timer On Compare (CTC) mode
-    WRITE_BIT(TCCR0B, WGM02, 0);
-    WRITE_BIT(TCCR0A, WGM01, 1);
-    WRITE_BIT(TCCR0A, WGM02, 1);
 }
 
 uint32_t timer_get() {
     uint32_t m;
-    cli(); // Disable interrupts for synchronization
-    m = millis;
-    sei(); // Reenable interrupts
+    ATOMIC_BLOCK(ATOMIC_FORCEON) {
+        m = millis;
+    }
     return m;
 }
