@@ -2,6 +2,7 @@ CC=avr-gcc
 MCU=atmega328p
 CSTD=c23
 CFLAGS=-mmcu=$(MCU) -std=$(CSTD) -Wall -pedantic -Os -flto
+# Light-weight implementation of printf
 LFLAGS=-Wl,-u,vfprintf -lprintf_min
 
 SRC_DIR=src

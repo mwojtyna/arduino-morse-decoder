@@ -1,7 +1,14 @@
 #include "lib.h"
+#include <avr/interrupt.h>
 #include <avr/io.h>
 #include <stdio.h>
 
+// ------------------ MATH ------------------
+inline int roundf_fast(float x) {
+    return (x >= 0.0f) ? (int)(x + 0.5f) : (int)(x - 0.5f);
+}
+
+// ------------------ USART ------------------
 static int usart_putchar(char data, FILE* stream) {
     // Wait until buffer is empty
     while (READ_BIT(UCSR0A, UDRE0) == 0) {
@@ -13,12 +20,11 @@ static int usart_putchar(char data, FILE* stream) {
 static FILE mystdout =
     FDEV_SETUP_STREAM(usart_putchar, NULL, _FDEV_SETUP_WRITE);
 
-void usart_init(uint32_t baud_rate, uint64_t cpu_clock) {
+void usart_init() {
     stdout = &mystdout;
 
     // Table 19-1, ATmega328P data sheet
-    const uint16_t UBRR =
-        roundf_fast((cpu_clock / (16 * (float)baud_rate)) - 1);
+    const uint16_t UBRR = roundf_fast((F_CPU / (16 * (float)BAUD)) - 1);
     UBRR0H = (uint8_t)(UBRR >> 8); // 4 most significant bits
     UBRR0L = (uint8_t)UBRR;        // 8 least significant bits
 
@@ -37,6 +43,41 @@ void usart_init(uint32_t baud_rate, uint64_t cpu_clock) {
     // clang-format on
 }
 
-inline int roundf_fast(float x) {
-    return (x >= 0.0f) ? (int)(x + 0.5f) : (int)(x - 0.5f);
+// ------------------ TIMER ------------------
+static volatile uint32_t millis = 0;
+
+// Interrupt for when timer counts up to 1ms
+ISR(TIMER0_COMPA_vect) {
+    millis++;
+}
+
+// Initializes timer to measure each ms elapsed
+void timer_init() {
+    // Enable interrupts, otherwise timer won't count from the start of program
+    sei();
+
+    // Set timer's clock source to system clock / 64
+    WRITE_BIT(TCCR0B, CS02, 0);
+    WRITE_BIT(TCCR0B, CS01, 1);
+    WRITE_BIT(TCCR0B, CS00, 1);
+
+    // Enable interrupts when OCR0A matches with timer
+    WRITE_BIT(TIMSK0, OCIE0A, 1);
+
+    // System clock / 64 = 16'000'000 / 64 = 250'000 ticks/s = 250 ticks/ms
+    // Generate an interrupt whenever the timer counts to 250 (to get an interrupt each ms)
+    OCR0A = 250;
+
+    // Enable Clear Timer On Compare (CTC) mode
+    WRITE_BIT(TCCR0B, WGM02, 0);
+    WRITE_BIT(TCCR0A, WGM01, 1);
+    WRITE_BIT(TCCR0A, WGM02, 1);
+}
+
+uint32_t timer_get() {
+    uint32_t m;
+    cli(); // Disable interrupts for synchronization
+    m = millis;
+    sei(); // Reenable interrupts
+    return m;
 }
