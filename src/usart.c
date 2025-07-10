@@ -1,5 +1,7 @@
-#include "lib.h"
+#include "io.h"
+#include "math.h"
 #include <avr/io.h>
+#include <stdint.h>
 #include <stdio.h>
 
 static int usart_putchar(char data, FILE* stream) {
@@ -35,8 +37,4 @@ void usart_init(uint32_t baud_rate, uint64_t cpu_clock) {
              (1 << UCSZ01) | (1 << UCSZ00) |      // 8-bit character size
              (0 << UCPOL0);                       // clock polarity = 0 because asynchronous mode
     // clang-format on
-}
-
-inline int roundf_fast(float x) {
-    return (x >= 0.0f) ? (int)(x + 0.5f) : (int)(x - 0.5f);
 }
