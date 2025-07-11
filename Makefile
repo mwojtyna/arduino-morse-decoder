@@ -9,8 +9,7 @@ SRCS_DIR=src
 BUILD_DIR=build
 
 # Input files
-# Force src/main.c to always be first, otherwise the main function isn't ran by the device
-SRCS=$(SRCS_DIR)/main.c $(filter-out $(SRCS_DIR)/main.c, $(wildcard $(SRCS_DIR)/*.c))
+SRCS=$(wildcard $(SRCS_DIR)/*.c)
 OBJS=$(patsubst $(SRCS_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
 HEADERS=$(wildcard $(SRCS_DIR)/*.h)
 
