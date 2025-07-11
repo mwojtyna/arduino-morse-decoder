@@ -5,14 +5,14 @@ CFLAGS=-mmcu=$(MCU) -std=$(CSTD) -Wall -pedantic -Os -flto
 # Light-weight implementation of printf
 LFLAGS=-Wl,-u,vfprintf -lprintf_min
 
-SRC_DIR=src
+SRCS_DIR=src
 BUILD_DIR=build
 
 # Input files
 # Force src/main.c to always be first, otherwise the main function isn't ran by the device
-SRC=$(SRC_DIR)/main.c $(filter-out $(SRC_DIR)/main.c, $(wildcard $(SRC_DIR)/*.c))
-OBJ=$(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
-LIB=$(SRC_DIR)/lib.h
+SRCS=$(SRCS_DIR)/main.c $(filter-out $(SRCS_DIR)/main.c, $(wildcard $(SRCS_DIR)/*.c))
+OBJS=$(patsubst $(SRCS_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
+HEADERS=$(wildcard $(SRCS_DIR)/*.h)
 
 # Output files
 ELF=$(BUILD_DIR)/morse.elf
@@ -22,10 +22,10 @@ BAUD=115200
 
 all: $(ELF)
 
-$(ELF): $(OBJ)
-	$(CC) $(CFLAGS) $(LFLAGS) $(OBJ) -o $(ELF)
+$(ELF): $(OBJS)
+	$(CC) $(CFLAGS) $(LFLAGS) $(OBJS) -o $(ELF)
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(LIB)
+$(BUILD_DIR)/%.o: $(SRCS_DIR)/%.c $(HEADERS)
 	$(CC) $(CFLAGS) $(LFLAGS) -c $< -o $@
 
 upload: $(ELF) size
@@ -39,6 +39,6 @@ size: $(ELF)
 	avr-size -C --mcu=$(MCU) $(ELF)
 
 clean:
-	rm -f $(OBJ) $(ELF) $(HEX)
+	rm -f $(OBJS) $(ELF) $(HEX)
 
 .PHONY: all upload listen size clean
