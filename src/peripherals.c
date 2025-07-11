@@ -1,4 +1,4 @@
-#include "lib.h"
+#include "peripherals.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h>

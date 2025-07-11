@@ -22,9 +22,11 @@ BAUD=115200
 
 all: $(ELF)
 
+# Linking
 $(ELF): $(OBJS)
 	$(CC) $(CFLAGS) $(LFLAGS) $(OBJS) -o $(ELF)
 
+# Compiling
 $(BUILD_DIR)/%.o: $(SRCS_DIR)/%.c $(HEADERS)
 	$(CC) $(CFLAGS) $(LFLAGS) -c $< -o $@
 

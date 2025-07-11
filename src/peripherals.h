@@ -19,8 +19,6 @@
 
 #define READ_BIT(reg, num) ((reg & (1 << num)) >> num)
 
-int roundf_fast(float x);
-
 // Initalize USART. After initialization you can use normal stdio.h functions to write output over serial.
 void usart_init();
 
