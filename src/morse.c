@@ -89,10 +89,6 @@ const Node* morse_read_node_dash(const Node* PROGMEM node) {
     return (const Node*)pgm_read_ptr(&(node->dash));
 }
 
-// Disable "'progmem' attribute ignored"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wattributes"
-bool morse_is_root(const Node PROGMEM* node) {
-#pragma GCC diagnostic pop
-    return node == &MORSE_ROOT;
+bool morse_is_intermediate_node(const Node* PROGMEM node) {
+    return morse_read_node_val(node) == '\0';
 }

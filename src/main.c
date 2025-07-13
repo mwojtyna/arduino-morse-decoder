@@ -25,6 +25,7 @@ int main() {
 
     const Node* PROGMEM morse_letter = morse_get_root();
 
+    // TODO: State machine?
     while (true) {
         // Because of the pull-up resistor, when the button is pressed the pin reads low
         bool button_pressed = READ_BIT(PIND, PIND6) == 0 ? true : false;
@@ -44,33 +45,21 @@ int main() {
             } else {
                 if (hold_begin_time != 0) {
                     if (timer_ms() - hold_begin_time <= DOT_MS) {
-                        const Node* dot = morse_read_node_dot(morse_letter);
-
-                        if (dot != NULL) {
-                            morse_letter = dot;
-                        } else {
-                            morse_letter = NULL;
-                        }
+                        morse_letter = morse_read_node_dot(morse_letter);
                     } else {
-                        const Node* dash = morse_read_node_dash(morse_letter);
-
-                        if (dash != NULL) {
-                            morse_letter = dash;
-                        } else {
-                            morse_letter = NULL;
-                        }
+                        morse_letter = morse_read_node_dash(morse_letter);
                     }
 
                     last_released_time = timer_ms();
                     hold_begin_time = 0;
                 }
 
-                // Select current letter as final if enough time elapsed
+                // Print current letter if enough time elapsed
                 if (timer_ms() - last_released_time >= ACCEPT_LETTER_MS &&
                     morse_letter != morse_get_root()) {
 
                     // TODO: Display on LCD
-                    if (morse_letter == NULL || morse_read_node_val(morse_letter) == '\0') {
+                    if (morse_letter == NULL || morse_is_intermediate_node(morse_letter)) {
                         printf_P(PSTR("invalid morse code\r\n"));
                     } else {
                         printf_P(PSTR("%c\r\n"), morse_read_node_val(morse_letter));

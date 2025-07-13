@@ -25,4 +25,7 @@ const Node* morse_read_node_dot(const Node* PROGMEM node);
 // If node is NULL, returns NULL
 const Node* morse_read_node_dash(const Node* PROGMEM node);
 
+// Returns whether the node is an intermediate node (which itself holds no value but leads to other nodes)
+bool morse_is_intermediate_node(const Node* PROGMEM node);
+
 #endif
