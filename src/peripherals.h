@@ -22,9 +22,11 @@
 // Initalize USART. After initialization you can use normal stdio.h functions to write output over serial.
 void usart_init();
 
+typedef uint32_t time;
+
 // Initializes timer to measure each ms elapsed
 void timer_init();
 // Returns ms elapsed from start of program
-uint32_t timer_ms();
+time timer_ms();
 
 #endif

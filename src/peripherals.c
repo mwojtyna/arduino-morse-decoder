@@ -44,7 +44,7 @@ void usart_init() {
 }
 
 // ------------------ TIMER ------------------
-static uint32_t millis = 0;
+static time millis = 0;
 
 // Interrupt for when timer counts up to 1ms
 ISR(TIMER0_COMPA_vect) {
@@ -70,8 +70,8 @@ void timer_init() {
     OCR0A = 250;
 }
 
-uint32_t timer_ms() {
-    uint32_t m;
+time timer_ms() {
+    time m;
     ATOMIC_BLOCK(ATOMIC_FORCEON) {
         m = millis;
     }
