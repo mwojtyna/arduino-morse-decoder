@@ -10,15 +10,19 @@ struct Node {
     const Node* dash;
 };
 
-extern const Node MORSE_ROOT;
+// Returns pointer to the root node of morse code tree
+const Node* PROGMEM morse_get_root();
 
 // Returns node value from program memory
-char morse_read_node_val(const Node* progmem_ptr);
+// If node is NULL, returns '\0'
+char morse_read_node_val(const Node* PROGMEM node);
 
 // Returns node's pointer to dot node, copied from program memory to SRAM
-const Node* morse_read_node_dot(const Node* progmem_ptr);
+// If node is NULL, returns NULL
+const Node* morse_read_node_dot(const Node* PROGMEM node);
 
 // Returns node's pointer to dash node, copied from program memory to SRAM
-const Node* morse_read_node_dash(const Node* progmem_ptr);
+// If node is NULL, returns NULL
+const Node* morse_read_node_dash(const Node* PROGMEM node);
 
 #endif

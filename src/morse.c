@@ -64,14 +64,35 @@ MORSE_NODE(MORSE_T, 'T', &MORSE_N, &MORSE_M);
 // Depth 0
 MORSE_NODE(MORSE_ROOT, '\0', &MORSE_E, &MORSE_T);
 
-char morse_read_node_val(const Node* progmem_ptr) {
-    return pgm_read_byte(&(progmem_ptr->val));
+const Node* PROGMEM morse_get_root() {
+    return &MORSE_ROOT;
 }
 
-const Node* morse_read_node_dot(const Node* progmem_ptr) {
-    return (const Node*)pgm_read_ptr(&(progmem_ptr->dot));
+char morse_read_node_val(const Node* PROGMEM node) {
+    if (node == NULL) {
+        return '\0';
+    }
+    return pgm_read_byte(&(node->val));
 }
 
-const Node* morse_read_node_dash(const Node* progmem_ptr) {
-    return (const Node*)pgm_read_ptr(&(progmem_ptr->dash));
+const Node* morse_read_node_dot(const Node* PROGMEM node) {
+    if (node == NULL) {
+        return NULL;
+    }
+    return (const Node*)pgm_read_ptr(&(node->dot));
+}
+
+const Node* morse_read_node_dash(const Node* PROGMEM node) {
+    if (node == NULL) {
+        return NULL;
+    }
+    return (const Node*)pgm_read_ptr(&(node->dash));
+}
+
+// Disable "'progmem' attribute ignored"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wattributes"
+bool morse_is_root(const Node PROGMEM* node) {
+#pragma GCC diagnostic pop
+    return node == &MORSE_ROOT;
 }
